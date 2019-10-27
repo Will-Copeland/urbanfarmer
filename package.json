@@ -25,7 +25,8 @@
     "gatsby-plugin-tslint": "0.0.2",
     "prettier": "^1.18.2",
     "tslint": "^5.20.0",
-    "tslint-loader": "^3.5.4"
+    "tslint-loader": "^3.5.4",
+    "typescript": "^3.6.4"
   },
   "keywords": [
     "gatsby"
