@@ -4,6 +4,7 @@ import * as firebase from "firebase";
 import Layout from "../components/layout"
 import Image from "../components/image"
 import SEO from "../components/seo"
+import * as Moment from "moment";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBAkMD__bZ0zMsBkM8Qbag9Z0CiWMxq35Q",
@@ -18,32 +19,41 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 const IndexPage = () => {
+  // const [tempHum, setTempHum] = React.useState<any>({});
+  const [latest, setLatest] = React.useState({});
+  const [time, setTime] = React.useState(0);
 
   React.useEffect(() => {
-    getDoc();
+    getTempAndHum();    
   }, [])
 
   return (
   <Layout>
     <SEO title="Home" />
-    <h1>Hi people</h1>
-    <p>Welcome to your new Gatsby site.</p>
-    <p>Now go build something great.</p>
-    <div style={{ maxWidth: `300px`, marginBottom: `1.45rem` }}>
-      <Image />
-    </div>
-    <Link to="/page-2/">Go to page 2</Link>
+    <h3>Sup Bee!</h3>
+    <h3>Heres the current temp and humidity: </h3>
+    <h1>Temp: {convertToF(latest["temp"])}F Hum: {latest["humidity"]}%</h1>
+    <h2>Updated: {Moment(time).fromNow()}</h2>
+    <h4><em>This is updated every 5 minutes</em></h4>
   </Layout>
-  )
+  );
 
-  function getDoc() {
+  function convertToF(C) {
+    return (C * 9/5) + 32;
+  }
+
+  function getTempAndHum() {
     firebase.firestore()
     .collection("test")
     .get()
     .then(resp =>{
       resp.forEach(doc => {
-        console.log(doc.data());
-        
+        const data = doc.data();
+        const latest = data.last;
+        // setTempHum(data.records);
+        setLatest(data.records[latest]);
+
+        setTime(latest * 1);
       })
     })
   }
