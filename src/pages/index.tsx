@@ -45,6 +45,7 @@ const IndexPage = () => {
   function getTempAndHum() {
     firebase.firestore()
     .collection("test")
+    .orderBy("uploadedAt")
     .get()
     .then(resp =>{
       resp.forEach(doc => {
