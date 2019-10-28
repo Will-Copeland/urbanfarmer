@@ -32,7 +32,8 @@ const IndexPage = () => {
     <SEO title="Home" />
     <h3>Sup Bee!</h3>
     <h3>Heres the current temp and humidity: </h3>
-    <h1>Temp: {convertToF(latest["temp"])}F Hum: {latest["humidity"]}%</h1>
+    <h1>Temp: {convertToF(latest["temp"])}F</h1>
+    <h1> Hum: {latest["humidity"]}%</h1>
     <h2>Updated: {Moment(time).fromNow()}</h2>
     <h4><em>This is updated every 5 minutes</em></h4>
   </Layout>
