@@ -1,10 +1,9 @@
 import React from "react"
-import { Link } from "gatsby"
 import * as firebase from "firebase";
 import Layout from "../components/layout"
-import Image from "../components/image"
 import SEO from "../components/seo"
-import * as Moment from "moment";
+import CurrentTempHum from "../components/CurrentTempHum";
+import TempHumGraph from "../components/TempHumGraph";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBAkMD__bZ0zMsBkM8Qbag9Z0CiWMxq35Q",
@@ -19,44 +18,36 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 const IndexPage = () => {
-  // const [tempHum, setTempHum] = React.useState<any>({});
-  const [latest, setLatest] = React.useState({});
-  const [time, setTime] = React.useState(0);
-
+  const [tempHum, setTempHum] = React.useState<any>({});
+  const [loading, setLoading] = React.useState<boolean>(true);
   React.useEffect(() => {
     getTempAndHum();    
-  }, [])
+  }, []);  
+
+  if (loading) return <h1>Loading...</h1>
 
   return (
   <Layout>
     <SEO title="Home" />
     <h3>Sup Bee!</h3>
-    <h3>Heres the current temp and humidity: </h3>
-    <h1>Temp: {convertToF(latest["temp"])}F</h1>
-    <h1> Hum: {latest["humidity"]}%</h1>
-    <h2>Updated: {Moment(time).fromNow()}</h2>
-    <h4><em>This is updated every 5 minutes</em></h4>
+    <CurrentTempHum currentTempData={tempHum[tempHum.length - 1]}  />
+    <TempHumGraph records={tempHum} />
   </Layout>
   );
 
-  function convertToF(C) {
-    return (C * 9/5) + 32;
-  }
-
-  function getTempAndHum() {
-    firebase.firestore()
+  async function getTempAndHum() {
+    await firebase.firestore()
     .collection("test")
     .orderBy("uploadedAt")
     .get()
     .then(resp =>{
+      const arr = [];
       resp.forEach(doc => {
         const data = doc.data();
-        const latest = data.last;
-        // setTempHum(data.records);
-        setLatest(data.records[latest]);
-
-        setTime(latest * 1);
-      })
+        arr.push(data);
+      });
+      setTempHum(arr);
+      setLoading(false);
     })
   }
 }
