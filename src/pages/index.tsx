@@ -5,14 +5,14 @@ import SEO from "../components/seo"
 import CurrentTempHum from "../components/CurrentTempHum";
 import TempHumGraph from "../components/TempHumGraph";
 
-const firebaseConfig = {
+var firebaseConfig = {
   apiKey: "AIzaSyBAkMD__bZ0zMsBkM8Qbag9Z0CiWMxq35Q",
   authDomain: "urbanfarmer-c46e0.firebaseapp.com",
   databaseURL: "https://urbanfarmer-c46e0.firebaseio.com",
   projectId: "urbanfarmer-c46e0",
   storageBucket: "urbanfarmer-c46e0.appspot.com",
   messagingSenderId: "374488641283",
-  appId: "1:374488641283:web:60d0da10cea5b24d784336"
+  appId: "1:374488641283:web:5ef1c90fdceb1576784336"
 };
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
