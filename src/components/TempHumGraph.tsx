@@ -1,51 +1,56 @@
-import React from 'react'
+import React from "react";
 import { Chart } from "react-google-charts";
 import * as Moment from "moment";
+import { RecordKeeperProperties } from "../models/RecordKeeper";
+import { TempData } from "../models/TempData";
+import { number } from "prop-types";
 
 interface Props {
-    records: any;
+  records: RecordKeeperProperties[];
 }
 
 function TempHumGraph(props: Props) {
-    const [dataPoints, setDataPoints] = React.useState([]);
+  const [dataPoints, setDataPoints] = React.useState([]);
 
-    React.useEffect(() => {
-        getDataPoints();
-    }, [props.records])
+  console.log(dataPoints);
+  
+  React.useEffect(() => {
+    getDataPoints();
+  }, [props.records]);
 
-    return (
-        <div>
-            <Chart
-                chartType="LineChart"
-                data={[["Time", "Temp", "Humidity"], ...dataPoints]}
-                width="100%"
-                height="600px"
-                legendToggle
-            />
-        </div>
-    );
+  return (
+    <div>
+      <Chart
+        chartType="LineChart"
+        data={[["Time", "Temp", "Humidity"], ...dataPoints[0]]}
+        width="100%"
+        height="600px"
+        legendToggle
+      />
+    </div>
+  );
 
-    function getDataPoints() {
-        // const recArr = Object.entries(props.records);
-        const data = props.records.map(rec => {
-            // console.log(rec);
-            const points = Object.entries(rec.records);
-            const timeTemp = points.map(pt => {
-                const time = Moment(pt[0] * 1).format("h:mm:ss a");
-                const temp = convertToF(pt[1].temp);
-                const hum = pt[1].humidity;
-                return [time, temp * 1, hum * 1];  
-            })
-            
-            return timeTemp;
-        });
-        
-        setDataPoints(data.flat());
-    } 
+  function getDataPoints() {
+    // const recArr = Object.entries(props.records);
+    const data = props.records.map((rec: RecordKeeperProperties) => {
+      // console.log(rec);
+      const points: TempData[] = rec.tempData;
+      return points.map((pt: TempData) => {
+        const time: string = Moment(pt.timeOfMeasurement * 1).format(
+          "h:mm:ss a"
+        );
+        const temp = convertToF(pt.temp);
+        const hum = pt.humidity;
+        return [time, temp, hum];
+      });
+    });
 
-    function convertToF(C) {
-        return (C * 9) / 5 + 32;
-      }
+    setDataPoints(data); 
+  }
+
+  function convertToF(C: number): number {
+    return (C * 9) / 5 + 32;
+  }
 }
 
-export default TempHumGraph
+export default TempHumGraph;

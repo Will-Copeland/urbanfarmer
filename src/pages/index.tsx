@@ -4,6 +4,7 @@ import Layout from "../components/layout"
 import SEO from "../components/seo"
 import CurrentTempHum from "../components/CurrentTempHum";
 import TempHumGraph from "../components/TempHumGraph";
+import { RecordKeeperProperties } from "../models/RecordKeeper";
 
 var firebaseConfig = {
   apiKey: "AIzaSyBAkMD__bZ0zMsBkM8Qbag9Z0CiWMxq35Q",
@@ -18,35 +19,41 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 const IndexPage = () => {
-  const [tempHum, setTempHum] = React.useState<any>({});
+  const [records, setRecords] = React.useState<RecordKeeperProperties[]>([]);
   const [loading, setLoading] = React.useState<boolean>(true);
+
   React.useEffect(() => {
     getTempAndHum();    
   }, []);  
 
-  if (loading) return <h1>Loading...</h1>
+  if (!records.length) return <h1>Loading...</h1>
 
+  console.log(records);
+  
   return (
   <Layout>
     <SEO title="Home" />
     <h3>Sup Bee!</h3>
-    <CurrentTempHum currentTempData={tempHum[tempHum.length - 1]}  />
-    <TempHumGraph records={tempHum} />
+    <CurrentTempHum record={records[records.length - 1]}  />
+    <TempHumGraph records={records} />
   </Layout>
   );
 
   async function getTempAndHum() {
     await firebase.firestore()
     .collection("test")
-    .orderBy("uploadedAt")
+    .orderBy("createdAt", "desc")
     .get()
-    .then(resp =>{
-      const arr = [];
+    .then(resp => {
+      const recs: RecordKeeperProperties[] = [];
       resp.forEach(doc => {
+
         const data = doc.data();
-        arr.push(data);
+        recs.push(data as RecordKeeperProperties);
+        console.log(data);
+        
       });
-      setTempHum(arr);
+      setRecords(recs);
       setLoading(false);
     })
   }
