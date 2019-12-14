@@ -3,7 +3,6 @@ import { Chart } from "react-google-charts";
 import * as Moment from "moment";
 import { RecordKeeperProperties } from "../models/RecordKeeper";
 import { TempData } from "../models/TempData";
-import { number } from "prop-types";
 
 interface Props {
   records: RecordKeeperProperties[];
@@ -11,18 +10,16 @@ interface Props {
 
 function TempHumGraph(props: Props) {
   const [dataPoints, setDataPoints] = React.useState([]);
-
-  console.log(dataPoints);
   
   React.useEffect(() => {
     getDataPoints();
   }, [props.records]);
-
+  
   return (
     <div>
       <Chart
         chartType="LineChart"
-        data={[["Time", "Temp", "Humidity"], ...dataPoints[0]]}
+        data={[["Time", "Temp", "Humidity"], ...dataPoints]}
         width="100%"
         height="600px"
         legendToggle
@@ -44,8 +41,9 @@ function TempHumGraph(props: Props) {
         return [time, temp, hum];
       });
     });
-
-    setDataPoints(data); 
+    console.log(data);
+    
+    setDataPoints(data.flat()); 
   }
 
   function convertToF(C: number): number {

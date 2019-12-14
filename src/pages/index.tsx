@@ -34,7 +34,7 @@ const IndexPage = () => {
   <Layout>
     <SEO title="Home" />
     <h3>Sup Bee!</h3>
-    <CurrentTempHum record={records[records.length - 1]}  />
+    <CurrentTempHum record={records.pop()}  />
     <TempHumGraph records={records} />
   </Layout>
   );
@@ -49,8 +49,9 @@ const IndexPage = () => {
       resp.forEach(doc => {
 
         const data = doc.data();
+               
         recs.push(data as RecordKeeperProperties);
-        console.log(data);
+        console.log("data: ", data);
         
       });
       setRecords(recs);
