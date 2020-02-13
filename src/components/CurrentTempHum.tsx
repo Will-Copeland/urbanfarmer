@@ -8,6 +8,8 @@ interface Props {
 }
 
 function CurrentTempHum({ record }: Props) {
+  console.log("rec: ", record);
+  
   const tempData: TempData[] = record.tempData;  
   const now = tempData[tempData.length - 1];
 

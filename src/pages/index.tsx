@@ -1,6 +1,6 @@
 import React from "react"
-import * as firebase from "firebase";
 import Layout from "../components/layout"
+import firebase, { firestore } from "firebase";
 import SEO from "../components/seo"
 import CurrentTempHum from "../components/CurrentTempHum";
 import TempHumGraph from "../components/TempHumGraph";
@@ -19,39 +19,37 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 const IndexPage = () => {
-  const [recordDays, setRecprdDays] = React.useState<RecordKeeperProperties[]>([]);
+  const [recordDays, setRecordDays] = React.useState<RecordKeeperProperties[]>([]);
 
-  React.useEffect(() => {
-    getRecordDays();
-  }, []);  
+  React.useEffect(subscribeToRecords, []);  
+  
+  console.log(recordDays);
   
   if (!recordDays.length) return <h1>Loading...</h1>
   
+
   return (
   <Layout>
     <SEO title="Home" />
-    <CurrentTempHum record={recordDays[0]}  />
-    <TempHumGraph records={recordDays} />
+    <CurrentTempHum record={!!recordDays[0].tempData ? recordDays[0] : recordDays[1]}  />
+    <TempHumGraph records={!!recordDays[0].tempData ? [recordDays[0]] : [recordDays[1]]} />
   </Layout>
   );
 
-  async function getRecordDays() {
-    const recordDays = await firebase.firestore()
-    .collection("test")
+
+  
+  function subscribeToRecords() {
+    return firestore().collection("test")
     .orderBy("createdAt", "desc")
-    .limit(1)
-    .get()
-    .then(snap => {
-      if (snap.empty) return [];
+    .onSnapshot(snap => {
       const arr = [];
       snap.forEach(doc => {
         const data = doc.data();
         data.id = doc.id;
         arr.push(data);
-      })
-      return arr;
+      });
+      setRecordDays(arr);
     })
-    setRecprdDays(recordDays);
   }
 }
 
