@@ -8,24 +8,20 @@ interface Props {
 }
 
 function CurrentTempHum({ record }: Props) {
-  const tempData: TempData[] = record.tempData;
-  console.log("tmp", tempData);
-  
+  const tempData: TempData[] = record.tempData;  
   const now = tempData[tempData.length - 1];
+
   return (
     <div>
-      <h3>Heres the current temp and humidity: </h3>
       <h1>Temp: {convertToF(now.temp)}F</h1>
-      <h1> Hum: {now.humidity}%</h1>
-      <h2>Updated: {Moment(now.timeOfMeasurement).fromNow()}</h2>
-      <h4>
-        <em>This is updated every 5 minutes</em>
-      </h4>
+      <h1> Hum: {Math.floor(now.humidity)}%</h1>
+      <h2>Updated: {Moment(now.timeOfMeasurement).fromNow()} || {Moment(now.timeOfMeasurement).format("MM/DD hh:mma")}</h2>
+
     </div>
   );
 
   function convertToF(C) {
-    return (C * 9) / 5 + 32;
+    return Math.floor((C * 9) / 5 + 32);
   }
 }
 

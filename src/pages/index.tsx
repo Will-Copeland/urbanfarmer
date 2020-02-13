@@ -19,44 +19,39 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 const IndexPage = () => {
-  const [records, setRecords] = React.useState<RecordKeeperProperties[]>([]);
-  const [loading, setLoading] = React.useState<boolean>(true);
+  const [recordDays, setRecprdDays] = React.useState<RecordKeeperProperties[]>([]);
 
   React.useEffect(() => {
-    getTempAndHum();    
+    getRecordDays();
   }, []);  
-
-  if (!records.length) return <h1>Loading...</h1>
-
-  console.log(records);
+  
+  if (!recordDays.length) return <h1>Loading...</h1>
   
   return (
   <Layout>
     <SEO title="Home" />
-    <h3>Sup Bee!</h3>
-    <CurrentTempHum record={records.pop()}  />
-    <TempHumGraph records={records} />
+    <CurrentTempHum record={recordDays[0]}  />
+    <TempHumGraph records={recordDays} />
   </Layout>
   );
 
-  async function getTempAndHum() {
-    await firebase.firestore()
+  async function getRecordDays() {
+    const recordDays = await firebase.firestore()
     .collection("test")
     .orderBy("createdAt", "desc")
+    .limit(1)
     .get()
-    .then(resp => {
-      const recs: RecordKeeperProperties[] = [];
-      resp.forEach(doc => {
-
+    .then(snap => {
+      if (snap.empty) return [];
+      const arr = [];
+      snap.forEach(doc => {
         const data = doc.data();
-               
-        recs.push(data as RecordKeeperProperties);
-        console.log("data: ", data);
-        
-      });
-      setRecords(recs);
-      setLoading(false);
+        data.id = doc.id;
+        arr.push(data);
+      })
+      return arr;
     })
+    setRecprdDays(recordDays);
   }
 }
 
