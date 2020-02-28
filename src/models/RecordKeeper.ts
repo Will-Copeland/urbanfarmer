@@ -11,5 +11,7 @@ export interface RecordKeeperProperties {
   createdAt: number; // unix
   updatedAt: any; // firestore.FieldValue.serverTimestamp()
   tempData: TempData[];
-
+  relayPowered: boolean;
+  humLowThreshold: number;
+  humHighThreshold: number;
 }

@@ -5,6 +5,7 @@ import SEO from "../components/seo"
 import CurrentTempHum from "../components/CurrentTempHum";
 import TempHumGraph from "../components/TempHumGraph";
 import { RecordKeeperProperties } from "../models/RecordKeeper";
+import { DeHumidifier } from "../components/DeHumidifer";
 
 var firebaseConfig = {
   apiKey: "AIzaSyBAkMD__bZ0zMsBkM8Qbag9Z0CiWMxq35Q",
@@ -21,23 +22,24 @@ firebase.initializeApp(firebaseConfig);
 const IndexPage = () => {
   const [recordDays, setRecordDays] = React.useState<RecordKeeperProperties[]>([]);
 
-  React.useEffect(subscribeToRecords, []);  
-  
+  React.useEffect(subscribeToRecords, []);
+
   console.log(recordDays);
-  
+
   if (!recordDays.length) return <h1>Loading...</h1>
-  
+
 
   return (
   <Layout>
     <SEO title="Home" />
+    <DeHumidifier record={recordDays[0]} />
     <CurrentTempHum record={!!recordDays[0].tempData ? recordDays[0] : recordDays[1]}  />
     <TempHumGraph records={!!recordDays[0].tempData ? [recordDays[0]] : [recordDays[1]]} />
   </Layout>
   );
 
 
-  
+
   function subscribeToRecords() {
     return firestore().collection("test")
     .orderBy("createdAt", "desc")
@@ -45,7 +47,7 @@ const IndexPage = () => {
       const arr = [];
       snap.forEach(doc => {
         const data = doc.data();
-        data.id = doc.id;
+        data.docID = doc.id;
         arr.push(data);
       });
       setRecordDays(arr);
