@@ -10,11 +10,11 @@ interface Props {
 
 function TempHumGraph(props: Props) {
   const [dataPoints, setDataPoints] = React.useState([]);
-  
+
   React.useEffect(() => {
     getDataPoints();
   }, [props.records]);
-  
+
   return (
     <div>
       <Chart
@@ -42,8 +42,8 @@ function TempHumGraph(props: Props) {
       });
     });
     console.log(data);
-    
-    setDataPoints(data.flat()); 
+
+    setDataPoints(data.flat());
   }
 
   function convertToF(C: number): number {
