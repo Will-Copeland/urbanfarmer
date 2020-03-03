@@ -28,30 +28,33 @@ const IndexPage = () => {
 
   if (!recordDays.length) return <h1>Loading...</h1>
 
-
+  const record = getValidRecord(recordDays);
   return (
-  <Layout>
-    <SEO title="Home" />
-    <DeHumidifier record={recordDays[0]} />
-    <CurrentTempHum record={!!recordDays[0].tempData ? recordDays[0] : recordDays[1]}  />
-    <TempHumGraph records={!!recordDays[0].tempData ? [recordDays[0]] : [recordDays[1]]} />
-  </Layout>
+    <Layout>
+      <SEO title="Home" />
+      <DeHumidifier record={record} />
+      <CurrentTempHum record={record} />
+      <TempHumGraph records={[record]} />
+    </Layout>
   );
 
 
+  function getValidRecord(records: RecordKeeperProperties[]) {
+    return records.filter(rec => !!rec.tempData.length)[0]
+  }
 
   function subscribeToRecords() {
     return firestore().collection("test")
-    .orderBy("createdAt", "desc")
-    .onSnapshot(snap => {
-      const arr = [];
-      snap.forEach(doc => {
-        const data = doc.data();
-        data.docID = doc.id;
-        arr.push(data);
-      });
-      setRecordDays(arr);
-    })
+      .orderBy("createdAt", "desc")
+      .onSnapshot(snap => {
+        const arr = [];
+        snap.forEach(doc => {
+          const data = doc.data();
+          data.docID = doc.id;
+          arr.push(data);
+        });
+        setRecordDays(arr);
+      })
   }
 }
 
