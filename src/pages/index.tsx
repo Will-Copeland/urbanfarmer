@@ -6,6 +6,8 @@ import CurrentTempHum from "../components/CurrentTempHum";
 import TempHumGraph from "../components/TempHumGraph";
 import { RecordKeeperProperties } from "../models/RecordKeeper";
 import { DeHumidifier } from "../components/DeHumidifer";
+import { TempData } from "../models/TempData";
+import GaugeDash from "../components/GaugeDash";
 
 var firebaseConfig = {
   apiKey: "AIzaSyBAkMD__bZ0zMsBkM8Qbag9Z0CiWMxq35Q",
@@ -27,31 +29,36 @@ const IndexPage = () => {
   console.log(recordDays);
 
   if (!recordDays.length) return <h1>Loading...</h1>
-
+  const record = getValidRecord(recordDays);
+  const tempData: TempData[] = record.tempData;
+  const now = tempData[tempData.length - 1];
 
   return (
-  <Layout>
-    <SEO title="Home" />
-    <DeHumidifier record={recordDays[0]} />
-    <CurrentTempHum record={!!recordDays[0].tempData ? recordDays[0] : recordDays[1]}  />
-    <TempHumGraph records={!!recordDays[0].tempData ? [recordDays[0]] : [recordDays[1]]} />
-  </Layout>
+    <Layout>
+      <SEO title="Home" />
+      <CurrentTempHum record={record} />
+
+      <TempHumGraph records={[record]} />
+    </Layout>
   );
 
 
+  function getValidRecord(records: RecordKeeperProperties[]) {
+    return records.filter(rec => !!rec.tempData.length)[0]
+  }
 
   function subscribeToRecords() {
     return firestore().collection("test")
-    .orderBy("createdAt", "desc")
-    .onSnapshot(snap => {
-      const arr = [];
-      snap.forEach(doc => {
-        const data = doc.data();
-        data.docID = doc.id;
-        arr.push(data);
-      });
-      setRecordDays(arr);
-    })
+      .orderBy("createdAt", "desc")
+      .onSnapshot(snap => {
+        const arr = [];
+        snap.forEach(doc => {
+          const data = doc.data();
+          data.docID = doc.id;
+          arr.push(data);
+        });
+        setRecordDays(arr);
+      })
   }
 }
 
