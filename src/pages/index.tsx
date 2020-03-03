@@ -6,6 +6,8 @@ import CurrentTempHum from "../components/CurrentTempHum";
 import TempHumGraph from "../components/TempHumGraph";
 import { RecordKeeperProperties } from "../models/RecordKeeper";
 import { DeHumidifier } from "../components/DeHumidifer";
+import { TempData } from "../models/TempData";
+import GaugeDash from "../components/GaugeDash";
 
 var firebaseConfig = {
   apiKey: "AIzaSyBAkMD__bZ0zMsBkM8Qbag9Z0CiWMxq35Q",
@@ -27,13 +29,15 @@ const IndexPage = () => {
   console.log(recordDays);
 
   if (!recordDays.length) return <h1>Loading...</h1>
-
   const record = getValidRecord(recordDays);
+  const tempData: TempData[] = record.tempData;
+  const now = tempData[tempData.length - 1];
+
   return (
     <Layout>
       <SEO title="Home" />
-      <DeHumidifier record={record} />
       <CurrentTempHum record={record} />
+
       <TempHumGraph records={[record]} />
     </Layout>
   );
